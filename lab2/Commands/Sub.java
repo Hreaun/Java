@@ -15,10 +15,11 @@ public class Sub implements Commands, Supplier<Commands> {
             a = stack.pop();
             b = stack.pop();
         } catch (Exception ex) {
-            System.out.println("An error at '-' command occurred.");
+            CommLogger.exeWarn(Sub.class.getName());
             throw ex;
         }
         stack.push(a - b);
+        CommLogger.exeInfo(Sub.class.getName());
     }
 
     @Override

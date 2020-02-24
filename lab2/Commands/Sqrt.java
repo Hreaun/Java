@@ -15,9 +15,10 @@ public class Sqrt implements Commands, Supplier<Commands> {
                 throw new InvalidParameterException("Negative root");
             stack.push(Math.sqrt(stack.pop()));
         } catch (Exception ex) {
-            System.out.println("An error at 'SQRT' command occurred.");
+            CommLogger.exeWarn(Sqrt.class.getName());
             throw ex;
         }
+        CommLogger.exeInfo(Sqrt.class.getName());
     }
 
     @Override

@@ -12,10 +12,10 @@ public class Pop implements Commands, Supplier<Commands> {
                 throw new IllegalArgumentException("'POP' doesn't require arguments.");
             stack.pop();
         } catch (Exception ex) {
-            System.out.println("An error at 'POP' command occurred.");
+            CommLogger.exeWarn(Pop.class.getName());
             throw ex;
         }
-
+        CommLogger.exeInfo(Pop.class.getName());
     }
 
     @Override

@@ -12,9 +12,10 @@ public class Add implements Commands, Supplier<Commands> {
                 throw new IllegalArgumentException("'+' doesn't require arguments.");
             stack.push(stack.pop() + stack.pop());
         } catch (Exception ex) {
-            System.out.println("An error at '+' command occurred.");
+            CommLogger.exeWarn(Add.class.getName());
             throw ex;
         }
+        CommLogger.exeInfo(Add.class.getName());
     }
 
     @Override

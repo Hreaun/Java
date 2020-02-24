@@ -13,10 +13,11 @@ public class Push implements Commands, Supplier<Commands> {
             try {
                 stack.push(Double.parseDouble(args[1]));
             } catch (NumberFormatException ex) {
-                System.out.println("An error at 'PUSH' command occurred.");
+                CommLogger.exeWarn(Push.class.getName());
                 throw new IllegalArgumentException("Such variable isn't defined: " + args[1]);
             }
         }
+        CommLogger.exeInfo(Push.class.getName());
     }
 
     @Override

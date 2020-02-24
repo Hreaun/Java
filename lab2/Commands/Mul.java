@@ -12,9 +12,10 @@ public class Mul implements Commands, Supplier<Commands> {
                 throw new IllegalArgumentException("'*' doesn't require arguments.");
             stack.push(stack.pop() * stack.pop());
         } catch (Exception ex) {
-            System.out.println("An error at '*' command occurred.");
+            CommLogger.exeWarn(Mul.class.getName());
             throw ex;
         }
+        CommLogger.exeInfo(Mul.class.getName());
     }
 
     @Override

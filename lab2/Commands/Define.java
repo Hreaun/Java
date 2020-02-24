@@ -14,14 +14,14 @@ public class Define implements Commands, Supplier<Commands> {
                 Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
                 def.put(args[1], Double.valueOf(args[2]));
+                CommLogger.exeInfo(Define.class.getName());
                 return;
             }
             throw new IllegalArgumentException("Cannot define a number.");
         } catch (IllegalArgumentException ex) {
-            System.out.println("An error at 'DEFINE' command occurred.");
+            CommLogger.exeWarn(Define.class.getName());
             throw ex;
         }
-
     }
 
     @Override

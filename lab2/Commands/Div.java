@@ -16,7 +16,7 @@ public class Div implements Commands, Supplier<Commands> {
             a = stack.pop();
             b = stack.pop();
         } catch (Exception ex) {
-            System.out.println("An error at '/' command occurred.");
+            CommLogger.exeWarn(Div.class.getName());
             throw ex;
         }
         try {
@@ -24,9 +24,10 @@ public class Div implements Commands, Supplier<Commands> {
                 throw new ArithmeticException("Division by zero.");
             stack.push(a / b);
         } catch (Exception ex) {
-            System.out.println("An error at '/' command occurred.");
+            CommLogger.exeWarn(Div.class.getName());
             throw ex;
         }
+        CommLogger.exeInfo(Div.class.getName());
     }
 
     @Override
