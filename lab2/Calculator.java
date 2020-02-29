@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 public class Calculator {
-    Commands command;
+    private Commands command;
     private Stack<Double> stack;
     private HashMap<String, Double> def;
 

@@ -13,6 +13,8 @@ public class Div implements Commands, Supplier<Commands> {
         try {
             if (args.length != 1)
                 throw new IllegalArgumentException("'/' doesn't require arguments.");
+            if (stack.size() < 2)
+                throw new IllegalArgumentException("Not enough parameters on stack.");
             a = stack.pop();
             b = stack.pop();
         } catch (Exception ex) {

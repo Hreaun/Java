@@ -10,6 +10,8 @@ public class Add implements Commands, Supplier<Commands> {
         try {
             if (args.length != 1)
                 throw new IllegalArgumentException("'+' doesn't require arguments.");
+            if (stack.size() < 2)
+                throw new IllegalArgumentException("Not enough parameters on stack.");
             stack.push(stack.pop() + stack.pop());
         } catch (Exception ex) {
             CommLogger.exeWarn(Add.class.getName());
