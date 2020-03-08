@@ -2,9 +2,12 @@ package Commands;
 
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Define implements Commands, Supplier<Commands> {
+public class Define implements Commands {
+    private static Logger log = Logger.getLogger(Define.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) throws IllegalArgumentException {
         try {
@@ -14,19 +17,14 @@ public class Define implements Commands, Supplier<Commands> {
                 Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
                 def.put(args[1], Double.valueOf(args[2]));
-                CommLogger.exeInfo(Define.class.getName());
+                log.log(Level.INFO, this.getClass().getName() + " executed, result: " + args[1] + " = " + def.get(args[1]));
                 return;
             }
             throw new IllegalArgumentException("Cannot define a number.");
         } catch (IllegalArgumentException ex) {
-            CommLogger.exeWarn(Define.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
-    }
-
-    @Override
-    public Define get() {
-        return new Define();
     }
 
 }

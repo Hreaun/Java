@@ -2,26 +2,24 @@ package Commands;
 
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Mul implements Commands, Supplier<Commands> {
+public class Mul implements Commands {
+    private static Logger log = Logger.getLogger(Mul.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) {
         try {
             if (args.length != 1)
                 throw new IllegalArgumentException("'*' doesn't require arguments.");
             if (stack.size() < 2)
-                throw new IllegalArgumentException("Not enough parameters on stack.");
+                throw new NotEnoughParametersException("Not enough parameters on stack.");
             stack.push(stack.pop() * stack.pop());
         } catch (Exception ex) {
-            CommLogger.exeWarn(Mul.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
-        CommLogger.exeInfo(Mul.class.getName());
-    }
-
-    @Override
-    public Mul get() {
-        return new Mul();
+        log.log(Level.INFO, this.getClass().getName() + " executed, result: " + stack.peek());
     }
 }

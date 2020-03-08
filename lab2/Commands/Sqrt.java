@@ -3,9 +3,12 @@ package Commands;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Sqrt implements Commands, Supplier<Commands> {
+public class Sqrt implements Commands {
+    private static Logger log = Logger.getLogger(Sqrt.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) {
         try {
@@ -15,14 +18,10 @@ public class Sqrt implements Commands, Supplier<Commands> {
                 throw new InvalidParameterException("Negative root");
             stack.push(Math.sqrt(stack.pop()));
         } catch (Exception ex) {
-            CommLogger.exeWarn(Sqrt.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
-        CommLogger.exeInfo(Sqrt.class.getName());
+        log.log(Level.INFO, this.getClass().getName() + " executed, result: " + stack.peek());
     }
 
-    @Override
-    public Sqrt get() {
-        return new Sqrt();
-    }
 }

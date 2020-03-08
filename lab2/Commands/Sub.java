@@ -2,9 +2,12 @@ package Commands;
 
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Sub implements Commands, Supplier<Commands> {
+public class Sub implements Commands {
+    private static Logger log = Logger.getLogger(Add.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) {
         Double a;
@@ -13,19 +16,14 @@ public class Sub implements Commands, Supplier<Commands> {
             if (args.length != 1)
                 throw new IllegalArgumentException("'-' doesn't require arguments.");
             if (stack.size() < 2)
-                throw new IllegalArgumentException("Not enough parameters on stack.");
+                throw new NotEnoughParametersException("Not enough parameters on stack.");
             a = stack.pop();
             b = stack.pop();
         } catch (Exception ex) {
-            CommLogger.exeWarn(Sub.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
         stack.push(a - b);
-        CommLogger.exeInfo(Sub.class.getName());
-    }
-
-    @Override
-    public Sub get() {
-        return new Sub();
+        log.log(Level.INFO, this.getClass().getName() + " executed, result: " + stack.peek());
     }
 }

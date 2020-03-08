@@ -3,9 +3,12 @@ package Commands;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Div implements Commands, Supplier<Commands> {
+public class Div implements Commands{
+    private static Logger log = Logger.getLogger(Div.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) throws EmptyStackException, ArithmeticException {
         Double a;
@@ -14,26 +17,14 @@ public class Div implements Commands, Supplier<Commands> {
             if (args.length != 1)
                 throw new IllegalArgumentException("'/' doesn't require arguments.");
             if (stack.size() < 2)
-                throw new IllegalArgumentException("Not enough parameters on stack.");
+                throw new NotEnoughParametersException("Not enough parameters on stack.");
             a = stack.pop();
             b = stack.pop();
         } catch (Exception ex) {
-            CommLogger.exeWarn(Div.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
-        try {
-            if (b == 0.0)
-                throw new ArithmeticException("Division by zero.");
-            stack.push(a / b);
-        } catch (Exception ex) {
-            CommLogger.exeWarn(Div.class.getName());
-            throw ex;
-        }
-        CommLogger.exeInfo(Div.class.getName());
-    }
-
-    @Override
-    public Div get() {
-        return new Div();
+        stack.push(a / b);
+        log.log(Level.INFO, this.getClass().getName() + " executed, result: " + stack.peek());
     }
 }

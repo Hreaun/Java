@@ -2,9 +2,12 @@ package Commands;
 
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Push implements Commands, Supplier<Commands> {
+public class Push implements Commands {
+    private static Logger log = Logger.getLogger(Push.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) {
         if (def.containsKey(args[1])) {
@@ -13,15 +16,11 @@ public class Push implements Commands, Supplier<Commands> {
             try {
                 stack.push(Double.parseDouble(args[1]));
             } catch (NumberFormatException ex) {
-                CommLogger.exeWarn(Push.class.getName());
+                log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
                 throw new IllegalArgumentException("Such variable isn't defined: " + args[1]);
             }
         }
-        CommLogger.exeInfo(Push.class.getName());
+        log.log(Level.INFO, this.getClass().getName() + " executed, result: " + stack.peek());
     }
 
-    @Override
-    public Push get() {
-        return new Push();
-    }
 }

@@ -3,9 +3,12 @@ package Commands;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Print implements Commands, Supplier<Commands> {
+public class Print implements Commands {
+    private static Logger log = Logger.getLogger(Print.class.getName());
+
     @Override
     public void execute(Stack<Double> stack, HashMap<String, Double> def, String[] args) {
         if (args.length != 1)
@@ -13,14 +16,10 @@ public class Print implements Commands, Supplier<Commands> {
         try {
             System.out.println(stack.peek());
         } catch (EmptyStackException ex) {
-            CommLogger.exeWarn(Print.class.getName());
+            log.log(Level.WARNING, "An error at " + this.getClass().getName() + " occurred");
             throw ex;
         }
-        CommLogger.exeInfo(Print.class.getName());
+        log.log(Level.INFO, this.getClass().getName() + " executed.");
     }
 
-    @Override
-    public Print get() {
-        return new Print();
-    }
 }
