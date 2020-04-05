@@ -26,8 +26,13 @@ public class Puck {
 
     public void update(Paddle one, Paddle two) {
         if (checkCollision(one) == Collision.NO_COLLISION && checkCollision(two) == Collision.NO_COLLISION) {
-            if ((this.y + speedY < 0) || (this.y + speedY > Pong.pong.height - this.height))
+            if (this.y + speedY < 0) {
+                this.y = 0;
                 this.speedY = -this.speedY;
+            } else if (this.y + speedY > Pong.pong.height - this.height) {
+                this.y = Pong.pong.height - this.height;
+                this.speedY = -this.speedY;
+            }
         }
         this.x += speedX;
         this.y += speedY;
@@ -35,12 +40,26 @@ public class Puck {
 
         if (checkCollision(one) == Collision.HIT) {
             this.speedX = 5;
-            if (random.nextInt(20) == 0)
-                this.speedX *= 3;
+
+            switch (random.nextInt(20)){
+                case 0: {
+                    this.speedX *= 3;
+                    break;
+                }
+                case 1:{
+                    this.speedX *= 2;
+                    break;
+                }
+                case 2:{
+                    this.speedX *= 1.5;
+                    break;
+                }
+            }
+
             if (Pong.pong.s) {
-                this.speedY = 6 - random.nextInt(2);
+                this.speedY = 6 - random.nextInt(3);
             } else if (Pong.pong.w) {
-                this.speedY = -6 + random.nextInt(2);
+                this.speedY = -6 + random.nextInt(3);
             }
         } else if (checkCollision(two) == Collision.HIT) {
             this.speedX = -5;
@@ -66,11 +85,10 @@ public class Puck {
             }
             this.reset();
         }
-
     }
 
     public Collision checkCollision(Paddle paddle) {
-        if ((this.x < paddle.x + paddle.width && this.x + this.width > paddle.x) &&
+        if ((this.x + this.width / 4 < paddle.x + paddle.width && this.x + this.width > paddle.x) &&
                 (this.y < paddle.y + paddle.height && this.y + this.height > paddle.y)) {
             return Collision.HIT;
         } else if ((this.x + this.width < 0 && paddle.paddleNumber == 1)

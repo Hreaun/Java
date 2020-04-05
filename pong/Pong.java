@@ -5,12 +5,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-
 enum GameStatus {STOPPED, PAUSED, PLAYING, END}
 
 public class Pong implements ActionListener, KeyListener {
     public static Pong pong;
+    public JFrame frame;
+    JMenuBar menuBar;
+    JMenuItem[] resolutions;
+    int baseWidth = 700, baseHeight = 584;
     public int width = 840, height = 700;
     public Renderer renderer;
 
@@ -23,12 +25,46 @@ public class Pong implements ActionListener, KeyListener {
 
     public Pong() {
         Timer timer = new Timer(12, this);
-        JFrame frame = new JFrame("Pong");
+        frame = new JFrame("Pong");
         renderer = new Renderer();
 
-        frame.setSize(width, height + 80);
+        menuBar = new JMenuBar();
+        JMenu game = new JMenu("Game");
+        game.setForeground(Color.WHITE);
+        JMenuItem exit = new JMenuItem("Exit");
+        exit.setForeground(Color.WHITE);
+        exit.setBackground(Color.BLACK);
+        exit.addActionListener((event) -> System.exit(0));
+        game.add(exit);
+        menuBar.add(game);
+
+        JMenu res = new JMenu("Resolution");
+        res.setForeground(Color.WHITE);
+        menuBar.add(res);
+        resolutions = new JMenuItem[5];
+        int resWidth = baseWidth;
+        int resHeight = baseHeight;
+        for (JMenuItem resolution : resolutions) {
+            resolution = new JMenuItem(resWidth + "*" + resHeight);
+            resolution.setForeground(Color.WHITE);
+            resolution.setBackground(Color.BLACK);
+            int finalResWidth = resWidth;
+            int finalResHeight = resHeight;
+            resolution.addActionListener((event) -> frame.setSize(finalResWidth, finalResHeight+60));
+            res.add(resolution);
+            resWidth *= 1.2;
+            resHeight *= 1.2;
+        }
+
+        UIManager.put("MenuBar.background", Color.BLACK);
+        frame.add(menuBar);
+        frame.setJMenuBar(menuBar);
+
+        frame.setSize(width, height+60);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
         frame.getContentPane().setBackground(Color.BLACK);
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.add(renderer);
         frame.addKeyListener(this);
@@ -49,7 +85,7 @@ public class Pong implements ActionListener, KeyListener {
 
     public void render(Graphics2D g) {
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
+        g.fillRect(0, 0, width, height+60);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (gameStatus == GameStatus.STOPPED) {
@@ -74,7 +110,9 @@ public class Pong implements ActionListener, KeyListener {
             playerOne.render(g);
             playerTwo.render(g);
             puck.render(g);
+
         }
+
         if (gameStatus == GameStatus.PAUSED) {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 50));
