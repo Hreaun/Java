@@ -1,8 +1,16 @@
 import java.util.LinkedList;
 
 public class Storage<T> {
-    private final int capacity = 100; //получается из properties
+    private final int capacity; //получается из properties
     private LinkedList<T> details = new LinkedList<>();
+
+    public Storage(int capacity){
+        this.capacity = capacity;
+    }
+
+    public synchronized int getSize(){
+        return details.size();
+    }
 
     public synchronized void add(T detail) throws InterruptedException {
         while (true) {
@@ -25,6 +33,5 @@ public class Storage<T> {
             wait();
         }
     }
-
 
 }

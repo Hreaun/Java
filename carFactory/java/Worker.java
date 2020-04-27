@@ -1,26 +1,39 @@
-import java.util.ArrayList;
-
 public class Worker extends Thread {
     private Body currentBody;
     private Engine currentEngine;
-    private ArrayList<Accessory> currentAccessories = new ArrayList<>();
+    private Accessory currentAccessory;
+    private final Storage<Engine> engineStorage;
+    private final Storage<Body> bodyStorage;
+    private final Storage<Accessory> accessoryStorage;
+    private final Storage<Car> carStorage;
 
-    public void getDetail(Storage<Detail> storage) throws InterruptedException {
-        if (storage.getClass().getComponentType() == Engine.class)
-            currentEngine = (Engine) storage.get();
-        if (storage.getClass().getComponentType() == Body.class)
-            currentBody = (Body) storage.get();
-        if (storage.getClass().getComponentType() == Accessory.class)
-            currentAccessories.add((Accessory) storage.get());
+    public Worker(Storage<Car> carStorage, Storage<Engine> engineStorage, Storage<Body> bodyStorage, Storage<Accessory> accessoryStorage) {
+        this.carStorage = carStorage;
+        this.engineStorage = engineStorage;
+        this.accessoryStorage = accessoryStorage;
+        this.bodyStorage = bodyStorage;
     }
 
     public void makeCar(Storage<Car> carStorage) throws InterruptedException {
-        Car car = new Car(currentBody, currentEngine, currentAccessories);
+        Car car = new Car(currentBody, currentEngine, currentAccessory);
         carStorage.add(car);
     }
 
     @Override
     public void run() {
-
+        while (!isInterrupted()) {
+            try {
+                currentEngine = engineStorage.get();
+                currentBody = bodyStorage.get();
+                currentAccessory = accessoryStorage.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                this.makeCar(carStorage);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
