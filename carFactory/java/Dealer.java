@@ -1,7 +1,7 @@
-import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 public class Dealer extends Thread {
+    private static final Logger log = Logger.getLogger(Dealer.class.getName());
     private final int dealerID;
     private final int dealerWaitTime = Integer.parseInt(Factory.factorySettings.getProperty("dealerWaitTime"));
     private int carsAmount;
@@ -16,15 +16,16 @@ public class Dealer extends Thread {
     }
 
     private void printInfo(Car car) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-        Date date = new Date(System.currentTimeMillis());
-        System.out.println(formatter.format(date) + ": Dealer " + dealerID + ":Auto " + car.getID() + car.getInfo());
+        log.info("Dealer " + dealerID + " :Auto " + car.getID() + car.getInfo());
+        carStorage.printInfo();
+        controller.printInfo();
     }
 
     public void getCar() throws InterruptedException {
         Car car = carStorage.get();
-        printInfo(car);
         carsAmount--;
+        controller.carsAmount--;
+        printInfo(car);
         if (carsAmount > 0) {
             synchronized (controller.carsAmount) {
                 controller.carsAmount++;

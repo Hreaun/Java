@@ -13,7 +13,7 @@ public class Car {
     }
 
     public String getInfo (){
-        String info = "(Body: " + body.getID() + ", Engine " + engine.getID() + ", Accessory " + accessory.getID() + ")";
+        String info = "(Body : " + body.getID() + ", Engine " + engine.getID() + ", Accessory " + accessory.getID() + ")";
         return info;
     }
 

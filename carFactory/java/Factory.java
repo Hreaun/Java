@@ -1,9 +1,20 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Factory extends Thread{
+    private static final Logger log = Logger.getLogger(Factory.class.getName());
+    static {
+        try (InputStream ins = Thread.currentThread().getContextClassLoader().getResourceAsStream("log.config")) {
+            LogManager.getLogManager().readConfiguration(ins);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     public static Properties factorySettings = new Properties();
 
     ArrayList<Dealer> dealers;
@@ -57,9 +68,7 @@ public class Factory extends Thread{
         for (Dealer dealer: dealers) {
             try {
                 dealer.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException ignored) { }
         }
 
         engineSupplier.interrupt();
@@ -71,7 +80,6 @@ public class Factory extends Thread{
         for (Worker worker: workers) {
             worker.interrupt();
         }
-        carStorage.getInfo();
     }
 
     static public int getInt(String str) {
@@ -82,8 +90,8 @@ public class Factory extends Thread{
         try {
             factorySettings.load(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("FactorySettings.properties")));
         } catch (IOException ioException) {
-            ioException.printStackTrace();
-            System.exit(-1);
+            log.severe(ioException.getMessage());
+            return;
         }
 
         Factory factory = new Factory(getInt("Dealers"), getInt("EngineStorage"), getInt("BodyStorage"), getInt("AccessoryStorage"),
@@ -92,8 +100,6 @@ public class Factory extends Thread{
 
         try {
             factory.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        } catch (InterruptedException ignored) { }
     }
 }
