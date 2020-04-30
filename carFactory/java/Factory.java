@@ -32,18 +32,6 @@ public class Factory extends Thread{
 
     @Override
     public void run() {
-        int dealerAmount = getInt("Dealers");
-        for (int i = 0; i < dealerAmount; i++) {
-            dealers.add(new Dealer(carStorage, Integer.parseInt(factorySettings.getProperty("CarsForOneDealer")), i));
-            dealers.get(i).start();
-        }
-
-        int accSuppAmount = getInt("AccessorySuppliers");
-        for (int i = 0; i < accSuppAmount; i++) {
-            accessorySuppliers.add(new Supplier<>(accessoryStorage, Accessory.class));
-            accessorySuppliers.get(i).start();
-        }
-
         int workerAmount = getInt("Workers");
         for (int i = 0; i < workerAmount; i++) {
             workers.add(new Worker(carStorage, engineStorage, bodyStorage, accessoryStorage));
@@ -53,6 +41,18 @@ public class Factory extends Thread{
         engineSupplier.start();
         bodySupplier.start();
         controller.start();
+
+        int dealerAmount = getInt("Dealers");
+        for (int i = 0; i < dealerAmount; i++) {
+            dealers.add(new Dealer(carStorage, Integer.parseInt(factorySettings.getProperty("CarsForOneDealer")), i, controller));
+            dealers.get(i).start();
+        }
+
+        int accSuppAmount = getInt("AccessorySuppliers");
+        for (int i = 0; i < accSuppAmount; i++) {
+            accessorySuppliers.add(new Supplier<>(accessoryStorage, Accessory.class));
+            accessorySuppliers.get(i).start();
+        }
 
         for (Dealer dealer: dealers) {
             try {
@@ -68,6 +68,10 @@ public class Factory extends Thread{
         for (Supplier<Accessory> supplier:accessorySuppliers) {
             supplier.interrupt();
         }
+        for (Worker worker: workers) {
+            worker.interrupt();
+        }
+        carStorage.getInfo();
     }
 
     static public int getInt(String str) {

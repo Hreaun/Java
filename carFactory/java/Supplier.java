@@ -32,7 +32,7 @@ public class Supplier<T> extends Thread{
             try {
                 storage.add(detail);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                break;
             }
             try {
                 sleep(supplierWaitTime);

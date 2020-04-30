@@ -1,15 +1,15 @@
 import java.util.LinkedList;
 
 public class Storage<T> {
-    private final int capacity; //получается из properties
-    private LinkedList<T> details = new LinkedList<>();
+    private final int capacity;
+    private final LinkedList<T> details = new LinkedList<>();
 
     public Storage(int capacity){
         this.capacity = capacity;
     }
 
-    public synchronized int getSize(){
-        return details.size();
+    public void getInfo(){
+        System.out.println(details.size());
     }
 
     public synchronized void add(T detail) throws InterruptedException {
