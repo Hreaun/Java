@@ -1,15 +1,16 @@
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class Supplier<T> extends Thread{
-    private final int supplierWaitTime = Integer.parseInt(Factory.factorySettings.getProperty("supplierWaitTime"));
-    private final Storage <T> storage;
+public class Supplier<T> extends Thread {
+    private final int supplierWaitTime;
+    private final Storage<T> storage;
     T detail;
 
     private Constructor<? extends T> ctor;
 
-    public Supplier(Storage<T> storage, Class<? extends T> impl) {
+    public Supplier(Storage<T> storage, Class<? extends T> impl, int supplierWaitTime) {
         this.storage = storage;
+        this.supplierWaitTime = supplierWaitTime;
         try {
             this.ctor = impl.getConstructor();
         } catch (NoSuchMethodException e) {
@@ -17,7 +18,7 @@ public class Supplier<T> extends Thread{
         }
     }
 
-    private void makeDetail()  {
+    private void makeDetail() {
         try {
             detail = ctor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

@@ -2,9 +2,9 @@ import java.util.UUID;
 
 public class Car {
     private final UUID carID = UUID.randomUUID();
-    private Body body;
-    private Engine engine;
-    private Accessory accessory;
+    private final Body body;
+    private final Engine engine;
+    private final Accessory accessory;
 
     public Car(Body body, Engine engine, Accessory accessory) {
         this.accessory = accessory;
@@ -12,13 +12,12 @@ public class Car {
         this.engine = engine;
     }
 
-    public String getInfo (){
-        String info = "(Body : " + body.getID() + ", Engine " + engine.getID() + ", Accessory " + accessory.getID() + ")";
-        return info;
+    public String getInfo() {
+        return " (Body : " + body.getID() + ", Engine : " + engine.getID() + ", Accessory : " + accessory.getID() + ")";
     }
 
-    public UUID getID() {
-        return carID;
+    public String getID() {
+        return carID.toString().substring(carID.toString().length() - 12);
     }
 
 }

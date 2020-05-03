@@ -1,4 +1,4 @@
-public class Worker extends Thread {
+public class Worker implements Runnable {
     private Body currentBody;
     private Engine currentEngine;
     private Accessory currentAccessory;
@@ -6,9 +6,9 @@ public class Worker extends Thread {
     private final Storage<Body> bodyStorage;
     private final Storage<Accessory> accessoryStorage;
     private final Storage<Car> carStorage;
-    public static final Object request = new Object();
 
-    public Worker(Storage<Car> carStorage, Storage<Engine> engineStorage, Storage<Body> bodyStorage, Storage<Accessory> accessoryStorage) {
+    public Worker(Storage<Car> carStorage, Storage<Engine> engineStorage, Storage<Body> bodyStorage,
+                  Storage<Accessory> accessoryStorage) {
         this.carStorage = carStorage;
         this.engineStorage = engineStorage;
         this.accessoryStorage = accessoryStorage;
@@ -22,26 +22,16 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-        while (!isInterrupted()) {
-            try {
-                synchronized (request) {
-                    request.wait();
-                }
-            } catch (InterruptedException e) {
-                break;
-            }
-            try {
-                currentEngine = engineStorage.get();
-                currentBody = bodyStorage.get();
-                currentAccessory = accessoryStorage.get();
-            } catch (InterruptedException e) {
-                break;
-            }
-            try {
-                this.makeCar(carStorage);
-            } catch (InterruptedException e) {
-                break;
-            }
+        try {
+            currentEngine = engineStorage.get();
+            currentBody = bodyStorage.get();
+            currentAccessory = accessoryStorage.get();
+        } catch (InterruptedException e) {
+            return;
+        }
+        try {
+            this.makeCar(carStorage);
+        } catch (InterruptedException ignored) {
         }
     }
 }

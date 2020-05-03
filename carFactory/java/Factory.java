@@ -1,21 +1,11 @@
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
-public class Factory extends Thread{
-    private static final Logger log = Logger.getLogger(Factory.class.getName());
-    static {
-        try (InputStream ins = Thread.currentThread().getContextClassLoader().getResourceAsStream("log.config")) {
-            LogManager.getLogManager().readConfiguration(ins);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    public static Properties factorySettings = new Properties();
+public class Factory {
+
+    public Properties factorySettings;
 
     ArrayList<Dealer> dealers;
     Storage<Car> carStorage;
@@ -25,81 +15,53 @@ public class Factory extends Thread{
     Supplier<Engine> engineSupplier;
     Supplier<Body> bodySupplier;
     ArrayList<Supplier<Accessory>> accessorySuppliers;
-    ArrayList<Worker> workers;
-    Controller controller;
+    ThreadPoolExecutor workers;
 
-    public Factory(int dealers, int engine, int body, int accessory, int accessorySuppliers, int workers, int cars){
+    public Factory(int dealers, int engine, int body, int accessory, int accessorySuppliers, int workers,
+                   int cars, Properties factorySettings) {
         this.dealers = new ArrayList<>(dealers);
         this.engineStorage = new Storage<>(engine);
         this.bodyStorage = new Storage<>(body);
         this.accessoryStorage = new Storage<>(accessory);
         this.accessorySuppliers = new ArrayList<>(accessorySuppliers);
-        this.workers =  new ArrayList<>(workers);
+        this.workers = (ThreadPoolExecutor) Executors.newFixedThreadPool(workers);
         this.carStorage = new Storage<>(cars);
-        engineSupplier = new Supplier<>(engineStorage, Engine.class);
-        bodySupplier = new Supplier<>(bodyStorage, Body.class);
-        controller = new Controller(carStorage, this.workers);
+        engineSupplier = new Supplier<>(engineStorage, Engine.class, Integer.parseInt(factorySettings.getProperty("engineSupplierWaitTime")));
+        bodySupplier = new Supplier<>(bodyStorage, Body.class, Integer.parseInt(factorySettings.getProperty("bodySupplierWaitTime")));
+        this.factorySettings = factorySettings;
+        carStorage.addObserver(new Controller(this.workers, carStorage, engineStorage, bodyStorage, accessoryStorage));
     }
 
-    @Override
-    public void run() {
-        int workerAmount = getInt("Workers");
-        for (int i = 0; i < workerAmount; i++) {
-            workers.add(new Worker(carStorage, engineStorage, bodyStorage, accessoryStorage));
-            workers.get(i).start();
-        }
-
+    public void start() {
         engineSupplier.start();
         bodySupplier.start();
-        controller.start();
 
-        int dealerAmount = getInt("Dealers");
+        int dealerAmount = Integer.parseInt(factorySettings.getProperty("Dealers"));
         for (int i = 0; i < dealerAmount; i++) {
-            dealers.add(new Dealer(carStorage, Integer.parseInt(factorySettings.getProperty("CarsForOneDealer")), i, controller));
+            dealers.add(new Dealer(carStorage, i, 250 * i + Integer.parseInt(factorySettings.getProperty("dealerWaitTime"))));
             dealers.get(i).start();
         }
 
-        int accSuppAmount = getInt("AccessorySuppliers");
+        int accSuppAmount = Integer.parseInt(factorySettings.getProperty("AccessorySuppliers"));
         for (int i = 0; i < accSuppAmount; i++) {
-            accessorySuppliers.add(new Supplier<>(accessoryStorage, Accessory.class));
+            accessorySuppliers.add(new Supplier<>(accessoryStorage, Accessory.class,
+                    Integer.parseInt(factorySettings.getProperty("accessorySupplierWaitTime"))));
             accessorySuppliers.get(i).start();
         }
+    }
 
-        for (Dealer dealer: dealers) {
-            try {
-                dealer.join();
-            } catch (InterruptedException ignored) { }
+    public void stop() {
+        for (Dealer dealer : dealers) {
+            dealer.interrupt();
         }
+
+        workers.shutdownNow();
 
         engineSupplier.interrupt();
         bodySupplier.interrupt();
-        controller.interrupt();
-        for (Supplier<Accessory> supplier:accessorySuppliers) {
+        for (Supplier<Accessory> supplier : accessorySuppliers) {
             supplier.interrupt();
         }
-        for (Worker worker: workers) {
-            worker.interrupt();
-        }
     }
 
-    static public int getInt(String str) {
-       return Integer.parseInt(factorySettings.getProperty(str));
-    }
-
-    public static void main(String[] args) {
-        try {
-            factorySettings.load(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("FactorySettings.properties")));
-        } catch (IOException ioException) {
-            log.severe(ioException.getMessage());
-            return;
-        }
-
-        Factory factory = new Factory(getInt("Dealers"), getInt("EngineStorage"), getInt("BodyStorage"), getInt("AccessoryStorage"),
-                getInt("AccessorySuppliers"), getInt("Workers"), getInt("CarStorage"));
-        factory.start();
-
-        try {
-            factory.join();
-        } catch (InterruptedException ignored) { }
-    }
 }

@@ -1,26 +1,21 @@
 import java.util.LinkedList;
-import java.util.logging.Logger;
+import java.util.Observable;
 
-public class Storage<T> {
-    private static final Logger log = Logger.getLogger(Storage.class.getName());
-    private final int capacity;
-    private final LinkedList<T> details = new LinkedList<>();
-    private int madeCount = 0;
+public class Storage<T> extends Observable {
+    public final int capacity;
+    public final LinkedList<T> details = new LinkedList<>();
 
-    public Storage(int capacity){
+    public Storage(int capacity) {
         this.capacity = capacity;
-    }
-
-    public void printInfo(){
-        log.info("Cars have been made: " + madeCount);
     }
 
     public synchronized void add(T detail) throws InterruptedException {
         while (true) {
             if (details.size() < capacity) {
                 details.add(detail);
-                madeCount++;
                 notify();
+                setChanged();
+                notifyObservers();
                 return;
             }
             wait();
@@ -28,10 +23,14 @@ public class Storage<T> {
     }
 
     public synchronized T get() throws InterruptedException {
+        setChanged();
+        notifyObservers();
         while (true) {
             if (details.size() > 0) {
                 T detail = details.pop();
                 notify();
+                setChanged();
+                notifyObservers(this);
                 return detail;
             }
             wait();
