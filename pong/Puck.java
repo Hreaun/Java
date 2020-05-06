@@ -41,16 +41,16 @@ public class Puck {
         if (checkCollision(one) == Collision.HIT) {
             this.speedX = 5;
 
-            switch (random.nextInt(20)){
+            switch (random.nextInt(20)) {
                 case 0: {
                     this.speedX *= 3;
                     break;
                 }
-                case 1:{
+                case 1: {
                     this.speedX *= 2;
                     break;
                 }
-                case 2:{
+                case 2: {
                     this.speedX *= 1.5;
                     break;
                 }
@@ -60,6 +60,8 @@ public class Puck {
                 this.speedY = 6 - random.nextInt(3);
             } else if (Pong.pong.w) {
                 this.speedY = -6 + random.nextInt(3);
+            } else {
+                this.speedY += -2 + random.nextInt(4);
             }
         } else if (checkCollision(two) == Collision.HIT) {
             this.speedX = -5;
@@ -69,6 +71,8 @@ public class Puck {
                 this.speedY = 6 - random.nextInt(2);
             } else if (Pong.pong.up) {
                 this.speedY = -6 + random.nextInt(2);
+            } else {
+                this.speedY += -2 + random.nextInt(4);
             }
         }
 

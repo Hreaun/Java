@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class Renderer extends JPanel {
+
     @Override
     protected void paintComponent(Graphics g) {
         double k = (double) Pong.pong.frame.getWidth() / Pong.pong.width;

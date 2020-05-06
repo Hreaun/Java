@@ -12,8 +12,7 @@ public class Pong implements ActionListener, KeyListener {
     public JFrame frame;
     JMenuBar menuBar;
     JMenuItem[] resolutions;
-    int baseWidth = 700, baseHeight = 584;
-    public int width = 840, height = 700;
+    public int width = 800, height = 670; // разрешение игры, относительно которого считается масштаб
     public Renderer renderer;
 
     public Paddle playerOne;
@@ -42,15 +41,15 @@ public class Pong implements ActionListener, KeyListener {
         res.setForeground(Color.WHITE);
         menuBar.add(res);
         resolutions = new JMenuItem[5];
-        int resWidth = baseWidth;
-        int resHeight = baseHeight;
+        int resWidth = width;
+        int resHeight = height;
         for (JMenuItem resolution : resolutions) {
             resolution = new JMenuItem(resWidth + "*" + resHeight);
             resolution.setForeground(Color.WHITE);
             resolution.setBackground(Color.BLACK);
             int finalResWidth = resWidth;
             int finalResHeight = resHeight;
-            resolution.addActionListener((event) -> frame.setSize(finalResWidth, finalResHeight+60));
+            resolution.addActionListener((event) -> frame.setSize(finalResWidth, finalResHeight + 60));
             res.add(resolution);
             resWidth *= 1.2;
             resHeight *= 1.2;
@@ -60,7 +59,7 @@ public class Pong implements ActionListener, KeyListener {
         frame.add(menuBar);
         frame.setJMenuBar(menuBar);
 
-        frame.setSize(width, height+60);
+        frame.setSize(width, height + 60);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setBackground(Color.BLACK);
@@ -85,7 +84,7 @@ public class Pong implements ActionListener, KeyListener {
 
     public void render(Graphics2D g) {
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height+60);
+        g.fillRect(0, 0, width, height + 60);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (gameStatus == GameStatus.STOPPED) {
