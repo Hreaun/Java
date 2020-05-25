@@ -16,12 +16,13 @@ public class View {
     public int width = 800, height = 670; // разрешение игры, относительно которого считается масштаб
     private final Controller controller;
     private final Model model;
-    public Renderer renderer;
+    private Renderer renderer;
 
 
 
     public View(Controller controller, Model model) {
         renderer = new Renderer(this, this.width);
+        model.addObserver(renderer);
         this.controller = controller;
         this.model = model;
         frame = new JFrame("Pong");
@@ -86,7 +87,7 @@ public class View {
         if (model.gameStatus == GameStatus.STOPPED) {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 50));
-            g.drawString("PONG", width / 2 - width / 10, 50);
+            g.drawString("PONG", width / 2 - width / 10, 100);
 
             g.setFont(new Font("Arial", Font.PLAIN, 30));
             g.drawString("Press space to play", width / 2 - width / 6, height / 2);

@@ -17,7 +17,8 @@ public class Controller implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -45,7 +46,10 @@ public class Controller implements KeyListener {
                 if (model.gameStatus == GameStatus.STOPPED || model.gameStatus == GameStatus.END) {
                     game.start();
                 } else if (model.gameStatus == GameStatus.PAUSED) {
-                    model.gameStatus = GameStatus.PLAYING;
+                    synchronized (model.pause) {
+                        model.pause.notify();
+                        model.gameStatus = GameStatus.PLAYING;
+                    }
                 } else if (model.gameStatus == GameStatus.PLAYING) {
                     model.gameStatus = GameStatus.PAUSED;
                 }

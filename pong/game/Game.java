@@ -10,9 +10,7 @@ public class Game {
     public Game(){
         this.model = new Model();
         Controller controller = new Controller(model, this);
-        View view = new View(controller, model);
-        model.addObserver(view.renderer);
-        model.timer.start();
+        new View(controller, model);
     }
 
     public void start(){

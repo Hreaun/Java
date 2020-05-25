@@ -1,21 +1,18 @@
 package model;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 enum Collision {NO_COLLISION, SCORE, HIT}
 
-public class Model extends Observable implements ActionListener  {
+public class Model extends Observable {
     public Paddle playerOne, playerTwo;
     public Puck puck;
     public GameStatus gameStatus = GameStatus.STOPPED;
     private final int fieldHeight = 670;
     private final int fieldWidth = 800;
-    public Timer timer = new Timer(12, this);
-
-
+    public final Object pause = new Object();
 
     public Collision checkCollision(Paddle paddle) {
         if ((puck.x + puck.width / 4 < paddle.x + paddle.width && puck.x + puck.width > paddle.x) &&
@@ -28,7 +25,7 @@ public class Model extends Observable implements ActionListener  {
         return Collision.NO_COLLISION;
     }
 
-    public void puckUpdate() {
+    private void puckUpdate() {
         if (checkCollision(playerOne) == Collision.NO_COLLISION && checkCollision(playerTwo) == Collision.NO_COLLISION) {
             if (puck.y + puck.speedY < 0) {
                 puck.y = 0;
@@ -67,7 +64,7 @@ public class Model extends Observable implements ActionListener  {
         }
     }
 
-    public void playersUpdate(){
+    private void playersUpdate() {
         if (playerOne.up) {
             playerOne.move(true);
         }
@@ -82,23 +79,40 @@ public class Model extends Observable implements ActionListener  {
         }
     }
 
-    public void start(){
+    public void start() {
         gameStatus = GameStatus.PLAYING;
         playerOne = new Paddle(1, fieldHeight, fieldWidth);
         playerTwo = new Paddle(2, fieldHeight, fieldWidth);
         puck = new Puck(fieldHeight, fieldWidth);
         puck.reset(playerOne, playerTwo);
-    }
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (gameStatus == GameStatus.END){
+                    setChanged();
+                    notifyObservers();
+                    timer.cancel();
+                }
+                if (gameStatus == GameStatus.PAUSED) {
+                    setChanged();
+                    notifyObservers();
+                    synchronized (pause) {
+                        try {
+                            pause.wait();
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                }
 
+                if (gameStatus == GameStatus.PLAYING) {
+                    puckUpdate();
+                    playersUpdate();
+                }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (gameStatus == GameStatus.PLAYING) {
-            puckUpdate();
-            playersUpdate();
-        }
-
-        setChanged();
-        notifyObservers();
+                setChanged();
+                notifyObservers();
+            }
+        }, 0, 10);
     }
 }
