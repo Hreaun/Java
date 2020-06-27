@@ -6,11 +6,17 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        Socket s = new Socket("127.0.0.1", 2048);
-
+    public static void main(String[] args) {
+        Socket s = null;
+        Client client = null;
         Controller controller = new Controller();
-        Client client = new Client(controller, s);
+        try {
+            s = new Socket("127.0.0.1", 2048);
+            client = new Client(controller, s);
+        } catch (IOException e) {
+            System.out.println("Cannot connect");
+            return;
+        }
         controller.addObserver(client);
         client.start();
     }

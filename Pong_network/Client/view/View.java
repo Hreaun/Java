@@ -19,7 +19,6 @@ public class View {
     private Renderer renderer;
 
 
-
     public View(Controller controller) {
         model = controller.model;
         renderer = new Renderer(this, this.width);
@@ -122,6 +121,12 @@ public class View {
 
             g.setFont(new Font("Arial", Font.PLAIN, 30));
             g.drawString("Press space to play", width / 2 - width / 6, height / 2);
+        }
+
+        if (model.gameStatus == GameStatus.DISCONNECT){
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("Disconnected", width / 2 - width / 6, 100);
         }
     }
 

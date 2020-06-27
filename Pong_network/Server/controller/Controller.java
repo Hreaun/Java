@@ -34,8 +34,8 @@ public class Controller extends Thread implements Observer {
             while (!isInterrupted()) {
                 synchronized (model.player[ID]) {
                     model.player[ID] = (Paddle) in.readObject();
-                    if (model.gameStatus == GameStatus.END){
-                        if (model.player[ID].ready && model.player[enemyID].ready){
+                    if (model.gameStatus == GameStatus.END) {
+                        if (model.player[ID].ready && model.player[enemyID].ready) {
                             model.player[ID].reset();
                             model.player[enemyID].reset();
                             model.start();
@@ -44,7 +44,9 @@ public class Controller extends Thread implements Observer {
                 }
             }
         } catch (IOException | ClassNotFoundException ex) {
-            ex.printStackTrace();
+            model.deleteObserver(this);
+            model.end();
+            this.interrupt();
         }
     }
 
@@ -60,7 +62,9 @@ public class Controller extends Thread implements Observer {
                 out.writeObject(model.playerTwo);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            model.deleteObserver(this);
+            model.end();
+            this.interrupt();
         }
     }
 }

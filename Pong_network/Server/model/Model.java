@@ -102,6 +102,9 @@ public class Model extends Observable implements Serializable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                if (gameStatus == GameStatus.DISCONNECT){
+                    return;
+                }
                 playerOne = player[0];
                 playerTwo = player[1];
                 if (playerOne.pause || playerTwo.pause){
@@ -129,5 +132,12 @@ public class Model extends Observable implements Serializable {
                 }
             }
         }, 0, 10);
+    }
+
+
+    public void end(){
+        gameStatus = GameStatus.DISCONNECT;
+        setChanged();
+        notifyObservers();
     }
 }
