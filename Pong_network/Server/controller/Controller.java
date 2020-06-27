@@ -1,5 +1,6 @@
 package Server.controller;
 
+import Server.model.GameStatus;
 import Server.model.Model;
 import Server.model.Paddle;
 
@@ -33,6 +34,13 @@ public class Controller extends Thread implements Observer {
             while (!isInterrupted()) {
                 synchronized (model.player[ID]) {
                     model.player[ID] = (Paddle) in.readObject();
+                    if (model.gameStatus == GameStatus.END){
+                        if (model.player[ID].ready && model.player[enemyID].ready){
+                            model.player[ID].reset();
+                            model.player[enemyID].reset();
+                            model.start();
+                        }
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException ex) {

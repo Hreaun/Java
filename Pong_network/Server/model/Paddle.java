@@ -18,6 +18,9 @@ public class Paddle implements Serializable {
     }
 
     public void reset(){
+        pause = false;
+        ready = false;
+        score = 0;
         if (paddleNumber == 1) {
             this.x = width;
         } else {

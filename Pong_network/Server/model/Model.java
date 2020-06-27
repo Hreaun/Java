@@ -66,16 +66,12 @@ public class Model extends Observable implements Serializable {
             playerTwo.score++;
             if (playerTwo.score == 11) {
                 this.gameStatus = GameStatus.END;
-                playerOne.ready = false;
-                playerTwo.ready = false;
             }
             puck.reset(playerOne, playerTwo);
         } else if (checkCollision(playerTwo) == Collision.SCORE) {
             playerOne.score++;
             if (playerOne.score == 11) {
                 this.gameStatus = GameStatus.END;
-                playerOne.ready = false;
-                playerTwo.ready = false;
             }
             puck.reset(playerOne, playerTwo);
         }

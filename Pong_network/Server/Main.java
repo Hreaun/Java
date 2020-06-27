@@ -37,14 +37,14 @@ public class Main {
         out2.reset();
         out2.writeObject(model.playerTwo);
 
-
         while (true) {
-            if (((Paddle)in1.readObject()).ready && ((Paddle)in2.readObject()).ready)
+            if (((Paddle) in1.readObject()).ready && ((Paddle) in2.readObject()).ready)
                 break;
         }
 
         model.addObserver(controller1);
         model.addObserver(controller2);
+
 
         model.start();
         controller1.start();
