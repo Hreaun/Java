@@ -103,6 +103,7 @@ public class Model extends Observable implements Serializable {
             @Override
             public void run() {
                 if (gameStatus == GameStatus.DISCONNECT){
+                    timer.cancel();
                     return;
                 }
                 playerOne = player[0];

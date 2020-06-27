@@ -20,11 +20,15 @@ public class Client extends Thread implements Observer {
     ObjectOutputStream out;
     ObjectInputStream in;
 
-    public Client(Controller controller, Socket socket) throws IOException {
+    public Client(Controller controller, Socket socket)  {
         this.controller = controller;
         this.socket = socket;
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
+        try {
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Disconnect");
+        }
     }
 
     @Override
@@ -46,7 +50,13 @@ public class Client extends Thread implements Observer {
                 controller.model.notifyObservers();
             }
         } catch (IOException | ClassNotFoundException ex) {
-            ex.printStackTrace();
+            if (controller.model == null){
+                System.out.println("Disconnect");
+                return;
+            }
+            controller.model.gameStatus = GameStatus.DISCONNECT;
+            controller.model.changed();
+            controller.model.notifyObservers();
         }
     }
 

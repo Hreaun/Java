@@ -32,6 +32,10 @@ public class Controller extends Thread implements Observer {
     public void run() {
         try {
             while (!isInterrupted()) {
+                if (model.gameStatus == GameStatus.DISCONNECT){
+                    current.close();
+                    return;
+                }
                 synchronized (model.player[ID]) {
                     model.player[ID] = (Paddle) in.readObject();
                     if (model.gameStatus == GameStatus.END) {
